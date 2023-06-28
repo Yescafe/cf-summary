@@ -71,13 +71,13 @@ def get_contests(time_limit = 48):
         duration = int(contest['durationSeconds'])
         countdown = -relative_time
         ret.append(Contest(name=name, cid=cid, start_time=start_time, countdown=countdown, duration=duration))
-    return ret
+    return ret[::-1]
 
 def get_contest_recent_one(time_limit = 7 * 24):
     cs = get_contests(time_limit)
     if len(cs) == 0:
         return None
-    return cs[-1]
+    return cs[0]
 
 class User:
     def __init__(self, name: str, rating: int, rank: str):
