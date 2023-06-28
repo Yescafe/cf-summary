@@ -32,8 +32,6 @@ def instruction_cf1(params):
         res = services.cf.get_contest_recent_one(time_limit=maybe_time_limit)
 
     if res is None:
-        return None
-    if len(res) == 0:
         return 'No coming soon contest.'
 
     return str(res)
