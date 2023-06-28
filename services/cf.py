@@ -84,10 +84,10 @@ class User:
         self.name = name
         self.rating = rating
         self.rank = rank
-    def __str__(self):
-        return f'- {self.name} - {self.rating} - {self.rank}'
     def __repr__(self):
         return f'User(name: "{self.name}", rating: {self.rating}, rank: "{self.rank}")'
+    def __str__(self):
+        return f'- {self.name} - {self.rating} - {self.rank}'
 
 def get_ratings(rating_sorted=True):
     # get handles from tokens.json
@@ -127,7 +127,7 @@ class RatingChange:
         self.old_rat = old_rat
         self.new_rat = new_rat
     def __repr__(self):
-        return f'RatingChange(name: "{self.name}", rank: {self.rank}, old_rat: {self.old_rat}, new_rat: {self.new_rat})'
+        return f'RatingChange(cid: {self.cid}, cname: "{self.cname}", name: "{self.name}", rank: {self.rank}, old_rat: {self.old_rat}, new_rat: {self.new_rat})'
     def __str__(self):
         def explcit_sign(x: int):
             if x < 0:
