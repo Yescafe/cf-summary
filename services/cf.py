@@ -6,25 +6,27 @@ API_PREFIX = 'https://codeforces.com/api/'
 CONTEST_URL_FMT = 'https://codeforces.com/contests/{}'
 
 class Contest:
-    def __init__(self, name: str, cid: int, start_time: int, duration: int):
+    def __init__(self, name: str, cid: int, start_time: int, countdown: int, duration: int):
         self.name = name
         self.cid = cid
         self.url = CONTEST_URL_FMT.format(cid)
         # start time in UNIX timestamp
         self.start_time = start_time
+        self.countdown = countdown
         # duration in seconds
         self.duration = duration
     def __repr__(self):
-        return f'Contest(name: "{self.name}", cid: {self.cid}, url: "{self.url}", start_time: {self.start_time}, duration: {self.duration})'
+        return f'Contest(name: "{self.name}", cid: {self.cid}, url: "{self.url}", start_time: {self.start_time}, countdown: {self.countdown}, duration: {self.duration})'
     def __str__(self):
         return f'''## {self.name}
 Contest ID: {self.cid}
 Start time: {self.stringify_start_time()}
+Countdown: {self.stringify_countdown()}
 Duration: {self.stringify_duration()}
 URL: {self.url}'''
 
-    def stringify_duration(self):
-        seconds, minutes, hours, days = self.duration % 60, self.duration // 60 % 60, self.duration // 60 // 60 % 24, self.duration // 60 // 60 // 24
+    def stringify_interval(s: int):
+        seconds, minutes, hours, days = s % 60, s // 60 % 60, s // 60 // 60 % 24, s // 60 // 60 // 24
         ret = ''
         if days > 0:
             ret += f'{days}d'
@@ -35,8 +37,13 @@ URL: {self.url}'''
         if seconds > 0:
             ret += f'{seconds}s'
         return ret
+
+    def stringify_duration(self):
+        return Contest.stringify_interval(self.duration)
     def stringify_start_time(self):
         return str(datetime.datetime.fromtimestamp(self.start_time))
+    def stringify_countdown(self):
+        return Contest.stringify_interval(self.countdown)
 
 def get_contests(time_limit = 48):
     api_url = API_PREFIX + 'contest.list'
@@ -62,7 +69,8 @@ def get_contests(time_limit = 48):
         cid = int(contest['id'])
         start_time = int(contest['startTimeSeconds'])
         duration = int(contest['durationSeconds'])
-        ret.append(Contest(name=name, cid=cid, start_time=start_time, duration=duration))
+        countdown = -relative_time
+        ret.append(Contest(name=name, cid=cid, start_time=start_time, countdown=countdown, duration=duration))
     return ret
 
 def get_contest_recent_one(time_limit = 7 * 24):
@@ -177,5 +185,5 @@ def get_rating_change(diff_sorted=True):
     return ret
 
 if __name__ == '__main__':
-    print(get_rating_change())
+    print(get_contests())
 
