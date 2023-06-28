@@ -1,4 +1,4 @@
-import apis.hello, apis.cf
+import apis.hello, apis.cf, apis.code_runner
 
 class Binder:
     def __init__(self, auto_prefix: str = '$'):
@@ -34,6 +34,7 @@ def make_binder() -> Binder:
     binder.bind('cf1', apis.cf.instruction_cf1, 'fetch one coming soon CF contest')
     binder.bind('cfr', apis.cf.instruction_cfr, 'get CF rating ranks')
     binder.bind('cfc', apis.cf.instruction_cfc, 'get the recent contest participants ranking change')
+    binder.bind('run', apis.code_runner.instruction_run, 'run source code')
 
     return binder
 
