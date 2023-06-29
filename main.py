@@ -2,6 +2,7 @@ import discord
 import os
 import dotenv
 from binder import make_binder
+from utils.tokens import get_tokens
 
 dotenv.load_dotenv()
 
@@ -19,7 +20,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    binder = make_binder()
+    binder = make_binder(client=client)
     ret = binder.compile(message.content)
     if not ret is None:
         await message.channel.send(ret.strip())

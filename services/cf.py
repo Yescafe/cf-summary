@@ -1,6 +1,7 @@
 import requests
 import json
 import datetime
+from utils.tokens import get_tokens
 
 API_PREFIX = 'https://codeforces.com/api/'
 CONTEST_URL_FMT = 'https://codeforces.com/contests/{}'
@@ -90,11 +91,7 @@ class User:
         return f'- {self.name} - {self.rating} - {self.rank}'
 
 def get_ratings(rating_sorted=True):
-    # get handles from tokens.json
-    with open('tokens.json', 'r+') as fp:
-        raw = fp.read()
-    tokens = json.loads(raw)
-    handles = tokens['handles']
+    handles = get_tokens()['handles']
     # generate query URL
     api_url = API_PREFIX + 'user.info?handles={}'.format(';'.join(handles))
     raw_data = requests.get(api_url)
@@ -137,11 +134,7 @@ class RatingChange:
         return f'- {self.name}({self.rank}): {self.old_rat} -> {self.new_rat} ({explcit_sign(self.new_rat - self.old_rat)})'
 
 def get_rating_change(diff_sorted=True):
-    # get handles from tokens.json
-    with open('tokens.json', 'r+') as fp:
-        raw = fp.read()
-    tokens = json.loads(raw)
-    handles = tokens['handles']
+    handles = get_tokens()['handles']
 
     QUERY_URL_FMT = API_PREFIX + 'user.rating?handle={}'
     latest_records = []

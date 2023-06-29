@@ -1,7 +1,9 @@
 import apis.hello, apis.cf, apis.code_runner
+import discord
 
 class Binder:
-    def __init__(self, auto_prefix: str = '$'):
+    def __init__(self, client: discord.Client = None, auto_prefix: str = '$'):
+        self.client = client
         self.auto_prefix = auto_prefix
         self.maps = [('help', self.instruction_help, 'get help')]
     def bind(self, instruction, func, tips: str = ''):
@@ -26,8 +28,8 @@ class Binder:
             return 'No instruction is available.'
         return ret
 
-def make_binder() -> Binder:
-    binder = Binder()
+def make_binder(client: discord.Client = None, auto_prefix: str = '$') -> Binder:
+    binder = Binder(client=client, auto_prefix=auto_prefix)
 
     binder.bind('hello', apis.hello.instruction_hello, 'echo hello')
     binder.bind('cf', apis.cf.instruction_cf, 'fetch coming soon CF contests')
