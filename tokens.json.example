@@ -2,5 +2,14 @@
   "handles": [
     "jiangly",
     "tourist"
+  ],
+  "channels": [
+    12345
+  ],
+  "groups": [
+    12345
+  ],
+  "admins": [
+    12345
   ]
 }

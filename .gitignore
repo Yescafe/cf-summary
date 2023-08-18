@@ -3,3 +3,11 @@
 __pycache__
 tokens.json
 
+# go-cqhttp files
+/go-cqhttp
+/config.yml
+/cqLogs
+/data
+/device.json
+/logs
+/session.token

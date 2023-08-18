@@ -1,2 +1,8 @@
 discord.py==2.2.3
 python-dotenv==1.0.0
+requests
+beautifulsoup4
+eventlet
+lxml
+pytz
+pycqBot==0.4.5.1
