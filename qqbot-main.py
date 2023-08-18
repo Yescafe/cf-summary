@@ -34,15 +34,10 @@ def main():
     utils.db.init_db()
 
     def timing_db_update(from_id):
-        errno, log = utils.db.update_db()
+        errno, _ = utils.db.update_db()
         if errno == 0:
             return
-        cqapi.send_group_msg(from_id, '定时更新出错，尝试重建数据库。')
-        errno, log = utils.db.force_update_db()
-        if errno == 0:
-            cqapi.send_group_msg(from_id, '重建数据库成功。')
-            return
-        cqapi.send_group_msg(from_id, '重建数据库失败，请检查后台。')
+        cqapi.send_group_msg(from_id, '定时更新出错，请检查后台。')
     bot.timing(timing_db_update, 'timing_db_update', { 'timeSleep': 28800 })
 
     bot.start()
