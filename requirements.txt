@@ -6,3 +6,5 @@ eventlet
 lxml
 pytz
 pycqBot==0.4.5.1
+pymysql==1.1.0
+cryptography

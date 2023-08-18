@@ -3,6 +3,7 @@ from pycqBot import Message
 import logging
 import utils.tokens
 import apis.qqbot.cf as qqbot_cf_apis
+import utils.db
 
 def main():
     cqLog(logging.DEBUG)
@@ -26,6 +27,23 @@ def main():
     bot_bind_command(qqbot_cf_apis.cf1, 'cf1', '获取 7 天内最近的一场 Codeforces 竞赛')
     bot_bind_command(qqbot_cf_apis.cfr, 'cfr', '获取名单上成员的 Codeforces 竞赛分')
     bot_bind_command(qqbot_cf_apis.cfc, 'cfc', '获取名单上成员的最近一场的 Codeforces 竞赛分变动')
+    bot_bind_command(qqbot_cf_apis.regular_update, 'db-update', '与 Codeforces 服务器同步数据库')
+    bot_bind_command(qqbot_cf_apis.force_update, 'db-force-update', '重建数据库')
+    bot_bind_command(qqbot_cf_apis.db_health, 'db-health', '数据库健康信息')
+
+    utils.db.init_db()
+
+    def timing_db_update(from_id):
+        errno, log = utils.db.update_db()
+        if errno == 0:
+            return
+        cqapi.send_group_msg(from_id, '定时更新出错，尝试重建数据库。')
+        errno, log = utils.db.force_update_db()
+        if errno == 0:
+            cqapi.send_group_msg(from_id, '重建数据库成功。')
+            return
+        cqapi.send_group_msg(from_id, '重建数据库失败，请检查后台。')
+    bot.timing(timing_db_update, 'timing_db_update', { 'timeSleep': 28800 })
 
     bot.start()
 
