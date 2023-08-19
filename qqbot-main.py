@@ -1,9 +1,9 @@
 from pycqBot.cqApi import cqHttpApi, cqLog
-from pycqBot import Message
 import logging
 import utils.tokens
 import apis.qqbot.cf as qqbot_cf_apis
 import utils.db
+from utils.time import get_readable_time
 
 def main():
     cqLog(logging.DEBUG)
@@ -34,10 +34,10 @@ def main():
     utils.db.init_db()
 
     def timing_db_update(from_id):
-        errno, _ = utils.db.update_db()
+        ts, errno, _ = utils.db.update_db()
         if errno == 0:
             return
-        cqapi.send_group_msg(from_id, '定时更新出错，请检查后台。')
+        cqapi.send_group_msg(from_id, f'于 {get_readable_time(ts)} 定时更新出错，请检查后台。')
     bot.timing(timing_db_update, 'timing_db_update', { 'timeSleep': 28800 })
 
     bot.start()

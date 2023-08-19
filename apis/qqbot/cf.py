@@ -16,7 +16,7 @@ class FakeMessage:
     def reply(self, msg: str):
         self.msg += msg
     def get(self):
-        return self.msg.strip() + f'\n该数据于 {get_readable_time(db.get_latest_succeed_time())} 更新，仅供参考。)'
+        return self.msg.strip() + f'\n该数据于 {get_readable_time(db.get_latest_succeed_time())} 更新，仅供参考。'
 
 def cf(_, message_: Message):
     message = FakeMessage()
@@ -60,21 +60,19 @@ def cfc(_, message_: Message):
 
 def regular_update(_, message: Message):
     message.reply('正在更新数据库数据…')
-    db.update_db()
-    timestamp, errno, log = db.get_latest_log()
+    ts, errno, log = db.update_db()
     if errno != 0:
         message.reply(f'更新出错，出错代码 {errno}，详细信息：{log[:100]}...。可尝试重建数据库。')
     else:
-        message.reply(f'于 {get_readable_time(timestamp)} 更新成功。')
+        message.reply(f'于 {get_readable_time(ts)} 更新成功。')
 
 def force_update(_, message: Message):
     message.reply('正在重建数据库数据…')
-    db.force_update_db()
-    timestamp, errno, log = db.get_latest_log()
+    ts, errno, log = db.force_update_db()
     if errno != 0:
         message.reply(f'更新出错，出错代码 {errno}，详细信息：{log[:100]}...。')
     else:
-        message.reply(f'于 {get_readable_time(timestamp)} 更新成功。')
+        message.reply(f'于 {get_readable_time(ts)} 更新成功。')
 
 def db_health(_, message: Message):
     latest_log = db.get_latest_log()

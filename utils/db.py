@@ -72,7 +72,7 @@ def init_db(force=False):
     primary key (name)
 )''')
     CURSOR.execute(r'''create table logs(
-    `id` int AUTO_INCREMENT,
+    `id` int NOT NULL AUTO_INCREMENT,
     errno int,
     verbose varchar(1024),
     timestamp int,
@@ -83,8 +83,8 @@ def init_db(force=False):
 
 E_DB, E_CONTESTS, E_RATINGS, E_RCHANGE = 1, 2, 4, 8
 
-def update_db() -> (int, str):
-    if CURSOR is None:
+def update_db() -> (int, int, str):
+    if CONN is None or CURSOR is None:
         return (E_DB, 'Database may be not initialized, try to use force update instead.')
 
     errno = 0
@@ -93,37 +93,37 @@ def update_db() -> (int, str):
         nonlocal log
         log += msg + '; '
 
-    print('=== updating contests')
+    print('=== Updating contests')
     contests = cfs.get_contests(time_limit=30 * 24)
     if contests is None:
         errno |= E_CONTESTS
         log_append('contests is None')
     else:
         for c in contests:
-            QUERY = r'insert into contests (cid, name, start_time, duration) values (%s, %s, %s, %s)'
+            QUERY = r'replace into contests (cid, name, start_time, duration) values (%s, %s, %s, %s)'
             PARAMS = (c.cid, c.name, c.start_time, c.duration)
             try:
                 CURSOR.execute(QUERY, PARAMS)
             except:
                 errno |= E_DB
-                log_append(f'query {QUERY} failed, params: {PARAMS}')
+                log_append(f'query `{QUERY}` failed, params: `{PARAMS}`')
 
-    print('=== updating users')
+    print('=== Updating users')
     users = cfs.get_ratings()
     if users is None:
         errno |= E_RATINGS
         log_append('users is None')
     else:
         for u in users:
-            QUERY = r'insert into users (name, rating, `rank`) values (%s, %s, %s)'
+            QUERY = r'replace into users (name, rating, `rank`) values (%s, %s, %s)'
             PARAMS = (u.name, u.rating, u.rank)
             try:
                 CURSOR.execute(QUERY, PARAMS)
             except:
                 errno |= E_DB
-                log_append(f'query {QUERY} failed, params: {PARAMS}')
+                log_append(f'query `{QUERY}` failed, params: `{PARAMS}`')
 
-    print('=== updating rating_change')
+    print('=== Updating rating_change')
     prepare_rating_change()
     rating_change = cfs.get_rating_change()
     if rating_change is None:
@@ -131,27 +131,30 @@ def update_db() -> (int, str):
         log_append('rating_change is None')
     else:
         for rc in rating_change:
-            QUERY = r'insert into rating_change (cid, cname, name, `rank`, old_rat, new_rat) values (%s, %s, %s, %s, %s, %s)'
+            QUERY = r'replace into rating_change (cid, cname, name, `rank`, old_rat, new_rat) values (%s, %s, %s, %s, %s, %s)'
             PARAMS = (rc.cid, rc.cname, rc.name, rc.rank, rc.old_rat, rc.new_rat)
             try:
                 CURSOR.execute(QUERY, PARAMS)
             except:
                 errno |= E_DB
-                log_append(f'query {QUERY} failed, params: {PARAMS}')
+                log_append(f'query `{QUERY}` failed, params: `{PARAMS}`')
 
     if errno == 0:
         log = 'Up-to-date.'
 
-    print('=== updating logs')
+    print('=== Updating logs')
+    current_timestamp = int(time.time())
     QUERY = r'insert into logs (errno, verbose, timestamp) values (%s, %s, %s)'
-    PARAMS = (errno, log, str(int(time.time())))
+    PARAMS = (errno, log, current_timestamp)
     try:
         CURSOR.execute(QUERY, PARAMS)
     except:
         errno |= E_DB
-        log_append(f'query {QUERY} failed, params: {PARAMS}')
+        log_append(f'query `{QUERY}` failed, params: `{PARAMS}`')
 
-    return errno, log
+    CONN.commit()
+
+    return current_timestamp, errno, log
 
 def force_update_db():
     init_db(force=True)
@@ -161,7 +164,7 @@ def get_latest_log() -> (int, int, str):
     if CURSOR is None:
         return (-1, None)
 
-    CURSOR.execute('SELECT * from logs order by timestamp desc limit 1')
+    CURSOR.execute(r'select * from logs order by timestamp desc limit 1')
     _, errno, log, timestamp = CURSOR.fetchone()
 
     return timestamp, errno, log
@@ -170,7 +173,7 @@ def get_latest_succeed_time() -> int:
     if CURSOR is None:
         return -1
 
-    CURSOR.execute('SELECT * from logs order by timestamp desc')
+    CURSOR.execute(r'select * from logs order by timestamp desc')
     raw_logs = CURSOR.fetchall()
 
     for rl in raw_logs:
@@ -182,7 +185,7 @@ def get_recent_contests(time_limit: int = 48):
     time_limit *= 3600    # hours to seconds
 
     try:
-        CURSOR.execute('SELECT * from contests order by start_time desc')
+        CURSOR.execute(r'select * from contests order by start_time desc')
     except:
         return []
     raw_contests = CURSOR.fetchall()
@@ -210,7 +213,7 @@ def get_one_recent_contest(time_limit: int = 7 * 24):
 
 def get_ratings():
     try:
-        CURSOR.execute('SELECT * from users order by rating desc')
+        CURSOR.execute(r'select * from users order by rating desc')
     except:
         return []
     raw_users = CURSOR.fetchall()
@@ -224,7 +227,7 @@ def get_ratings():
 
 def get_rating_change():
     try:
-        CURSOR.execute('SELECT * from rating_change')
+        CURSOR.execute(r'select * from rating_change')
     except:
         return []
     raw_rating_change = CURSOR.fetchall()
