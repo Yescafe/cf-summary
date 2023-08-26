@@ -199,7 +199,7 @@ def get_recent_contests(time_limit: int = 48):
         elif -relative_time > time_limit:
             continue
 
-        name, cid, start_time, duration = rc
+        cid, name, start_time, duration = rc
         countdown = -relative_time
         ret.append(cfs.Contest(name=name, cid=cid, start_time=start_time, countdown=countdown, duration=duration))
 

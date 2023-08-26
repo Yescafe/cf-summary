@@ -16,7 +16,7 @@ class FakeMessage:
     def reply(self, msg: str):
         self.msg += msg
     def get(self):
-        return self.msg.strip() + f'\n该数据于 {get_readable_time(db.get_latest_succeed_time())} 更新，仅供参考。'
+        return self.msg.strip() + f'\n\n（该数据于 {get_readable_time(db.get_latest_succeed_time())} 更新，仅供参考）'
 
 def cf(_, message_: Message):
     message = FakeMessage()
@@ -26,7 +26,7 @@ def cf(_, message_: Message):
     elif len(contests) == 0:
         message.reply('最近 48 小时内无 Codeforces 竞赛。')
     else:
-        message.reply('\n'.join(str(c) for c in contests))
+        message.reply('\n\n'.join(str(c) for c in contests))
     message_.reply(message.get())
 
 def cf1(_, message_: Message):
