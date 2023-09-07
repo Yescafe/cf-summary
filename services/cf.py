@@ -5,6 +5,7 @@ from utils.tokens import get_tokens
 
 API_PREFIX = 'https://codeforces.com/api/'
 CONTEST_URL_FMT = 'https://codeforces.com/contests/{}'
+CONTEST_STANDING_FMT = 'https://codeforces.com/api/contest.standings?contestId={}&from=1&count=1'
 
 class Contest:
     def __init__(self, name: str, cid: int, start_time: int, countdown: int, duration: int):
@@ -178,6 +179,46 @@ def get_rating_change(diff_sorted=True):
 
     return ret
 
-if __name__ == '__main__':
-    print(get_contests())
+class Problem:
+    def __init__(self, cid: int, pid: int, pname: str, difficulty):
+        self.cid = cid
+        self.pid = pid
+        self.pname = pname
+        self.difficulty = difficulty
+    def __repr__(self):
+        return f'Problem(cid: {self.cid}, pid: {self.pid}, pname: {self.pname}, difficulty: {self.difficulty})'
+    def __str__(self):
+        if self.difficulty is not None:
+            return f'- {self.pid}, {self.pname} - {self.difficulty}'
+        else:
+            return f'- {self.pid}, {self.pname}'
 
+def get_contest_problems(cid: int):
+    api_url = CONTEST_STANDING_FMT.format(cid)
+    raw = requests.get(api_url)
+    if raw.status_code != 200:
+        return (None, None)
+
+    result = json.loads(raw.text)['result']
+    contest_json = result['contest']
+    problmes_json = result['problems']
+
+    contest = Contest(
+        name=contest_json['name'],
+        cid=int(contest_json['id']),
+        start_time=int(contest_json['startTimeSeconds']),
+        countdown=int(contest_json['durationSeconds']),
+        duration=-int(contest_json['relativeTimeSeconds']),
+    )
+    problems = []
+
+    for p in problmes_json:
+        pid = p['index']
+        pname = p['name']
+        try:
+            difficulty = p['rating']
+        except:
+            difficulty = None
+        problems.append(Problem(cid=contest.cid, pid=pid, pname=pname, difficulty=difficulty))
+
+    return (contest, problems)

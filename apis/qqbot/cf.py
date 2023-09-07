@@ -1,6 +1,7 @@
 from pycqBot import Message
 import utils.db as db
 from utils.time import get_readable_time
+import services.cf as cfs
 
 def _err(message: Message):
     # TODO never reach?
@@ -84,5 +85,21 @@ def db_health(_, message: Message):
 
     if succ_time != try_time:
         msg += f'失败原因：Errno {latest_log[1]}，{latest_log[2][:200]}\n'
+
+    message.reply(msg.strip())
+
+def cp(params, message: Message):
+    cid = int(' '.join(params))
+    contest, problems = cfs.get_contest_problems(cid)
+
+    if contest is None or problems is None:
+        message.reply('获取竞赛题失败，请检查竞赛 ID 是否合法。')
+        return
+
+    msg = ''
+    msg += f'## {contest.name}\n'
+    msg += f'URL: {contest.url}\n'
+    for p in problems:
+        msg += str(p) + '\n'
 
     message.reply(msg.strip())
