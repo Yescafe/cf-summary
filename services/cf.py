@@ -147,6 +147,7 @@ def get_rating_change(diff_sorted=True):
             result = json.loads(raw_data.text)['result']
             if len(result) == 0:
                 continue
+            result.sort(key=lambda x: int(x['contestId']))
             latest_contest = result[-1]
 
             cid = int(latest_contest['contestId'])
