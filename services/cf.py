@@ -139,6 +139,9 @@ def get_rating_change(diff_sorted=True):
 
     QUERY_URL_FMT = API_PREFIX + 'user.rating?handle={}'
     latest_records = []
+
+    recent_contest_id, recent_contest_update_time = 0, 0
+
     for handle in handles:
         api_url = QUERY_URL_FMT.format(handle)
         raw_data = requests.get(api_url)
@@ -148,14 +151,18 @@ def get_rating_change(diff_sorted=True):
             result = json.loads(raw_data.text)['result']
             if len(result) == 0:
                 continue
-            result.sort(key=lambda x: int(x['contestId']))
-            latest_contest = result[-1]
+            result.sort(key=lambda x: -int(x['ratingUpdateTimeSeconds']))
+            latest_contest = result[0]
 
             cid = int(latest_contest['contestId'])
             cname = latest_contest['contestName']
             rank = int(latest_contest['rank'])
             old_rat = int(latest_contest['oldRating'])
             new_rat = int(latest_contest['newRating'])
+
+            if latest_contest['ratingUpdateTimeSeconds'] > recent_contest_update_time:
+                recent_contest_update_time = int(latest_contest['ratingUpdateTimeSeconds'])
+                recent_contest_id = cid
 
             latest_records.append(RatingChange(cid=cid, cname=cname, name=handle, rank=rank, old_rat=old_rat, new_rat=new_rat))
         except ValueError:
@@ -164,12 +171,10 @@ def get_rating_change(diff_sorted=True):
     if len(latest_records) == 0:
         return latest_records
 
-    latest_records.sort(key=lambda x: (-x.cid))
-    recent_contest_id = latest_records[0].cid
     ret = []
     for record in latest_records:
         if record.cid != recent_contest_id:
-            break
+            continue
         ret.append(record)
 
     if diff_sorted:
