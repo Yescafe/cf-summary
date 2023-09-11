@@ -42,10 +42,23 @@ def cf1(_, message_: Message):
 def cfr(_, message_: Message):
     message = FakeMessage()
     lst_users = db.get_ratings()
+
+    rating_change = db.get_rating_change()
+    rc_dict = dict()
+    for rc in rating_change:
+        rc_dict[rc.name] = rc.new_rat - rc.old_rat
+
     if lst_users is None:
         _err(message)
     else:
-        message.reply('\n'.join(str(u) for u in lst_users))
+        replication = ''
+        for u in lst_users:
+            if u.name in rc_dict:
+                increment = ('+' if rc_dict[u.name] >= 0 else '') + str(rc_dict[u.name])
+                replication += f'- {u.name} - {u.rating}({increment}) - {u.rank}\n'
+            else:
+                replication += str(u) + '\n'
+        message.reply(replication)
     message_.reply(message.get())
 
 def cfc(_, message_: Message):
