@@ -33,6 +33,12 @@ def main():
     bot_bind_command(qqbot_cf_apis.force_update, 'db-force-update', '重建数据库')
     bot_bind_command(qqbot_cf_apis.db_health, 'db-health', '数据库健康信息')
 
+    # 中文关键词
+    bot_bind_command(qqbot_cf_apis.cf, '竞赛', '获取 48 小时内的 Codeforces 竞赛')
+    bot_bind_command(qqbot_cf_apis.cf1, '一场竞赛', '获取 7 天内最近的一场 Codeforces 竞赛')
+    bot_bind_command(qqbot_cf_apis.cfr, '竞赛分', '获取名单上成员的 Codeforces 竞赛分')
+    bot_bind_command(qqbot_cf_apis.cfc, '变动', '获取名单上成员的最近一场的 Codeforces 竞赛分变动')
+
     utils.db.init_db()
 
     def bot_bind_reminder(f, fname: str, time_sleep_hours: int, help_name: str = None):
