@@ -11,3 +11,7 @@ tokens.json
 /device.json
 /logs
 /session.token
+
+data_*.json
+
+.vscode

@@ -1,5 +1,5 @@
 from pycqBot import Message
-import utils.db as db
+import utils.fake_db as db
 from utils.time import get_readable_time
 import services.cf as cfs
 
@@ -79,27 +79,6 @@ def regular_update(_, message: Message):
         message.reply(f'更新出错，出错代码 {errno}，详细信息：{log[:100]}...。可尝试重建数据库。')
     else:
         message.reply(f'于 {get_readable_time(ts)} 更新成功。')
-
-def force_update(_, message: Message):
-    message.reply('正在重建数据库数据…')
-    ts, errno, log = db.force_update_db()
-    if errno != 0:
-        message.reply(f'更新出错，出错代码 {errno}，详细信息：{log[:100]}...。')
-    else:
-        message.reply(f'于 {get_readable_time(ts)} 更新成功。')
-
-def db_health(_, message: Message):
-    latest_log = db.get_latest_log()
-    succ_time, try_time = db.get_latest_succeed_time(), latest_log[0]
-
-    msg = ''
-    msg += f'上次尝试更新时间：{get_readable_time(try_time)}\n'
-    msg += f'上次成功更新时间：{get_readable_time(succ_time)}\n'
-
-    if succ_time != try_time:
-        msg += f'失败原因：Errno {latest_log[1]}，{latest_log[2][:200]}\n'
-
-    message.reply(msg.strip())
 
 def cp(params, message: Message):
     cid = int(' '.join(params))

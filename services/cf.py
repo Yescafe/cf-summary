@@ -8,7 +8,7 @@ CONTEST_URL_FMT = 'https://codeforces.com/contests/{}'
 CONTEST_STANDING_FMT = 'https://codeforces.com/api/contest.standings?contestId={}&from=1&count=1'
 
 class Contest:
-    def __init__(self, name: str, cid: int, start_time: int, countdown: int, duration: int):
+    def __init__(self, name: str, cid: int, start_time: int, countdown: int, duration: int, url: str = None):
         self.name = name
         self.cid = cid
         self.url = CONTEST_URL_FMT.format(cid)

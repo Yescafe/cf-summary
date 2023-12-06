@@ -30,8 +30,6 @@ def main():
     bot_bind_command(qqbot_cf_apis.cfc, 'rc', '获取名单上成员的最近一场的 Codeforces 竞赛分变动')
     bot_bind_command(qqbot_cf_apis.cp, 'cp', '获取某一个竞赛的题单和信息 (WIP)')
     bot_bind_command(qqbot_cf_apis.regular_update, 'db-update', '与 Codeforces 服务器同步数据库')
-    bot_bind_command(qqbot_cf_apis.force_update, 'db-force-update', '重建数据库')
-    bot_bind_command(qqbot_cf_apis.db_health, 'db-health', '数据库健康信息')
 
     # 中文关键词
     bot_bind_command(qqbot_cf_apis.cf, '竞赛', '获取 48 小时内的 Codeforces 竞赛')
