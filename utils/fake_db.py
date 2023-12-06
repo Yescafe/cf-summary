@@ -1,6 +1,8 @@
 import services.cf as cfs
 import json
 import time
+import os
+import datetime
 
 def toJson(a):
     return json.dumps(a, default=lambda o: o.__dict__, sort_keys=True, indent=4)
@@ -70,3 +72,9 @@ def get_rating_change():
         return []
 
     return [cfs.RatingChange(**c) for c in j]
+
+def get_latest_succeed_time():
+    try:
+        return str(datetime.datetime.fromtimestamp(os.path.getmtime('data_contests.json')))
+    except:
+        return "NULL"
