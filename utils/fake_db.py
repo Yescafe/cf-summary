@@ -75,6 +75,6 @@ def get_rating_change():
 
 def get_latest_succeed_time():
     try:
-        return str(datetime.datetime.fromtimestamp(os.path.getmtime('data_contests.json')))
+        return os.path.getmtime('data_contests.json')
     except:
-        return "NULL"
+        return -1
