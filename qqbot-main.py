@@ -2,7 +2,7 @@ from pycqBot.cqApi import cqHttpApi, cqLog
 import logging
 import utils.tokens
 import apis.qqbot.cf as qqbot_cf_apis
-import utils.db
+import utils.fake_db as db
 from utils.time import get_readable_time
 from apis.qqbot.cf import FakeMessage
 
@@ -37,22 +37,23 @@ def main():
     bot_bind_command(qqbot_cf_apis.cfr, '竞赛分', '获取名单上成员的 Codeforces 竞赛分')
     bot_bind_command(qqbot_cf_apis.cfc, '变动', '获取名单上成员的最近一场的 Codeforces 竞赛分变动')
 
-    utils.db.init_db()
+    if db.init_db() is not None:
+        exit(-1)
 
     def bot_bind_reminder(f, fname: str, time_sleep_hours: int, help_name: str = None):
         time_sleep = time_sleep_hours * 3600
         bot.timing(f, fname, { 'timeSleep': time_sleep })
 
     def timing_db_update(from_id):
-        ts, errno, _ = utils.db.update_db()
-        if errno == 0:
+        err = db.update_db()
+        if err is None:
             return
-        cqapi.send_group_msg(from_id, f'于 {get_readable_time(ts)} 定时更新出错，请检查后台。')
+        cqapi.send_group_msg(from_id, f'错误：{err}')
     bot_bind_reminder(timing_db_update, 'timing_db_update', 8, '定时同步数据库')
 
     def timing_cf_reminder(from_id):
         HOURS = 48
-        contests = utils.db.get_recent_contests(time_limit=HOURS)
+        contests = db.get_recent_contests(time_limit=HOURS)
         if len(contests) > 0:
             message = FakeMessage()
             message.reply(f'最近 {HOURS} 小时内的 Codeforces 竞赛提醒：\n' + '\n'.join(str(c) for c in contests))

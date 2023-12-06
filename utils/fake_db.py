@@ -8,7 +8,7 @@ def toJson(a):
     return json.dumps(a, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
 def init_db(force=False):
-    update_db()
+    return update_db()
 
 ITEMS = {
     'contests': lambda: cfs.get_contests(time_limit=30 * 24),
@@ -27,6 +27,7 @@ def update_db() -> str:
                 fp.write(toJson(lst))
             except:
                 return f"can't store to data_{name}.json"
+    return None
 
 def get_recent_contests(time_limit: int = 48):
     time_limit *= 3600
