@@ -23,6 +23,12 @@ def main():
         else:
             bot.command(f, fname)
 
+    # 中文关键词
+    bot_bind_command(qqbot_cf_apis.cf, '竞赛', '获取 48 小时内的 Codeforces 竞赛')
+    bot_bind_command(qqbot_cf_apis.cf1, '一场竞赛', '获取 7 天内最近的一场 Codeforces 竞赛')
+    bot_bind_command(qqbot_cf_apis.cfr, '竞赛分', '获取名单上成员的 Codeforces 竞赛分')
+    bot_bind_command(qqbot_cf_apis.cfc, '变动', '获取名单上成员的最近一场的 Codeforces 竞赛分变动')
+
     bot_bind_command(qqbot_cf_apis.ping, 'ping', '测试')
     bot_bind_command(qqbot_cf_apis.cf, 'cc', '获取 48 小时内的 Codeforces 竞赛')
     bot_bind_command(qqbot_cf_apis.cf1, 'cc1', '获取 7 天内最近的一场 Codeforces 竞赛')
@@ -30,12 +36,9 @@ def main():
     bot_bind_command(qqbot_cf_apis.cfc, 'rc', '获取名单上成员的最近一场的 Codeforces 竞赛分变动')
     bot_bind_command(qqbot_cf_apis.cp, 'cp', '获取某一个竞赛的题单和信息 (WIP)')
     bot_bind_command(qqbot_cf_apis.regular_update, 'db-update', '与 Codeforces 服务器同步数据库')
-
-    # 中文关键词
-    bot_bind_command(qqbot_cf_apis.cf, '竞赛', '获取 48 小时内的 Codeforces 竞赛')
-    bot_bind_command(qqbot_cf_apis.cf1, '一场竞赛', '获取 7 天内最近的一场 Codeforces 竞赛')
-    bot_bind_command(qqbot_cf_apis.cfr, '竞赛分', '获取名单上成员的 Codeforces 竞赛分')
-    bot_bind_command(qqbot_cf_apis.cfc, '变动', '获取名单上成员的最近一场的 Codeforces 竞赛分变动')
+    bot_bind_command(qqbot_cf_apis.user_add, 'useradd', '添加 handles，可一次性添加多个')
+    bot_bind_command(qqbot_cf_apis.user_del, 'userdel', '删除 handles，可一次性删除多个')
+    bot_bind_command(qqbot_cf_apis.fetch_handles, 'handles', '查看在列的所有 handles')
 
     if db.init_db() is not None:
         exit(-1)

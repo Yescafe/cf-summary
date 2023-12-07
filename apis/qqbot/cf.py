@@ -2,6 +2,8 @@ from pycqBot import Message
 import utils.fake_db as db
 from utils.time import get_readable_time
 import services.cf as cfs
+import utils.tokens as tokens
+import json
 
 def _err(message: Message):
     # TODO never reach?
@@ -95,3 +97,39 @@ def cp(params, message: Message):
         msg += str(p) + '\n'
 
     message.reply(msg.strip())
+
+def user_add(users, message: Message):
+    t = tokens.get_tokens()
+    reply = ''
+    for user in users:
+        if user in t['handles']:
+            reply += f'{user} 已在列表中\n'
+        else:
+            t['handles'].append(user)
+            reply += f'欢迎 {user}！\n'
+    try:
+        with open('tokens.json', 'w') as fp:
+            json.dump(t, fp, indent=4)
+    except:
+        reply = '写回失败！'
+    message.reply(reply.strip())
+
+def user_del(users, message: Message):
+    t = tokens.get_tokens()
+    reply = ''
+    for user in users:
+        if user in t['handles']:
+            t['handles'].remove(user)
+            reply += f'移除 {user}，有缘再见！\n'
+        else:
+            reply += f'{user} 不在列表中\n'
+    try:
+        with open('tokens.json', 'w') as fp:
+            json.dump(t, fp, indent=4)
+    except:
+        reply = '写回失败！'
+    message.reply(reply.strip())
+
+def fetch_handles(_, message: Message):
+    t = tokens.get_tokens()
+    message.reply(str(t['handles']))
