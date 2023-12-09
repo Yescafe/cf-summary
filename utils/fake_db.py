@@ -48,7 +48,7 @@ def get_recent_contests(time_limit: int = 48):
             continue
         ret.append(contest)
 
-    return ret[::-1]
+    return ret
 
 def get_one_recent_contest(time_limit: int = 7 * 24):
     contests = get_recent_contests(time_limit=time_limit)
