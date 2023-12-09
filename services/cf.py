@@ -2,6 +2,7 @@ import requests
 import json
 import datetime
 from utils.tokens import get_tokens
+import time
 
 API_PREFIX = 'https://codeforces.com/api/'
 CONTEST_URL_FMT = 'https://codeforces.com/contests/{}'
@@ -14,7 +15,7 @@ class Contest:
         self.url = CONTEST_URL_FMT.format(cid)
         # start time in UNIX timestamp
         self.start_time = start_time
-        self.countdown = countdown
+        self.countdown = start_time - int(time.time())
         # duration in seconds
         self.duration = duration
     def __repr__(self):
